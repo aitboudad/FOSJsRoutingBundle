@@ -82,7 +82,12 @@ class Controller
             $serializedRoutes = $this->serializer->serialize($exposedRoutes, 'json');
             $cache->write($serializedRoutes, $this->exposedRoutesExtractor->getResources());
         } else {
-            $serializedRoutes = file_get_contents((string) $cache);
+            if (method_exists($cache, 'getPath')) {
+                $cachePath = $cache->getPath();
+            } else {
+                $cachePath = (string) $cache;
+            }
+            $serializedRoutes = file_get_contents($cachePath);
             $exposedRoutes    = $this->serializer->deserialize(
                 $serializedRoutes,
                 'Symfony\Component\Routing\RouteCollection',
